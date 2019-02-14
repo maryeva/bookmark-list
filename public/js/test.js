@@ -1,0 +1,1 @@
+document.getElementById('submission').innerHTML = JSON.parse(sessionStorage.getItem('links'));

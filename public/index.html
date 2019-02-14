@@ -11,9 +11,9 @@
     <div class="container">
       <h1>Bookmarks</h1>  
       <p>Add, edit and delete your bookmarks</p>
-      <form id="bookmarkForm">
-        <input id="userInput" placeholder="Enter URL">
-        <button id="submitBtn">Submit</button>
+      <form id="bookmarkForm" method="POST" action="/results">
+        <input id="userInput" name="link" placeholder="Enter URL">
+        <button id="submitBtn" type="submit" class="primary-btn">Submit</button>
         <span id="errorMessage"></span>
       </form>
 

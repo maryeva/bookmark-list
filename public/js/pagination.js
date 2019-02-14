@@ -1,4 +1,5 @@
 module.exports = (function calculatePagination(storedLinks) { 
+  const addListeners = require('./addListeners');
   const config = {
     currentPage: 1,
     maxItemsPerPage: 20,
@@ -80,11 +81,10 @@ module.exports = (function calculatePagination(storedLinks) {
       `;
       document.getElementById('links').appendChild(li);
     }
-   
+    addListeners(storedLinks);
     return document.getElementById('links');
    }
 
   renderResults();
   renderNavigation();
-  
 });

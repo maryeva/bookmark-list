@@ -1630,38 +1630,76 @@ function isSlowBuffer (obj) {
 }
 
 },{}],28:[function(require,module,exports){
+module.exports = (function addListeners(storedLinks) {
+  const refreshLinks = require('./refreshLinks');
+
+  var saveBtns = document.getElementsByClassName('saveBtn');
+  var editBtns = document.getElementsByClassName('editBtn');
+  var removeBtns = document.getElementsByClassName('removeBtn');
+
+  for (let i=0; i < removeBtns.length; i++) {
+    removeBtns[i].addEventListener('click', removeBookmark);
+    editBtns[i].addEventListener('click', editBookmark);
+    saveBtns[i].addEventListener('click', saveBookmark);
+  };
+
+  function removeBookmark(e) {
+    let id = e.currentTarget.getAttribute('id');
+    let listItem = e.currentTarget.parentNode.parentNode;
+    document.getElementById('links').removeChild(listItem);
+
+    storedLinks.splice(id,1);
+    sessionStorage.setItem('links', JSON.stringify(storedLinks));
+    refreshLinks();
+  }
+
+  /**
+   * Replace text with input and enable edit mode
+   */
+  function editBookmark(e) {
+    let listItem = e.currentTarget.parentNode.parentNode;
+    listItem.classList.add('editMode');
+
+    let id = e.currentTarget.getAttribute('id');
+    let content = e.currentTarget.parentNode.previousSibling.previousSibling;
+    let editInput = document.createElement('input');
+    editInput.classList.add('editInput')
+    editInput.setAttribute('id', id);
+    editInput.value = storedLinks[id];
+    content.innerHTML = '';
+    content.appendChild(editInput);
+  }
+
+  /**
+   * Makes sure we get the value of the current active input
+   * and updates storedLinks array with new value
+   */
+  function saveBookmark(e) {
+    let id = e.currentTarget.getAttribute('id');
+    let newValue = document.querySelector(`input[id="${id}"]`).value;
+    storedLinks[id] = newValue;
+    sessionStorage.setItem('links', JSON.stringify(storedLinks));
+
+    //revert back to normal view
+    let listItem = e.currentTarget.parentNode.parentNode;
+    listItem.classList.remove('editMode');
+    let content = e.currentTarget.parentNode.previousSibling.previousSibling;
+    content.innerHTML = newValue;
+  }
+});
+},{"./refreshLinks":31}],29:[function(require,module,exports){
 (function(){
-  const calculatePagination = require('./pagination');
+  const refreshLinks = require('./refreshLinks');
   const axios = require('axios');
 
   var error = document.getElementById('errorMessage');
   var input = document.getElementById('userInput');
   var submitBtn = document.getElementById('submitBtn');
-  var saveBtns = document.getElementsByClassName('saveBtn');
-  var editBtns = document.getElementsByClassName('editBtn');
-  var removeBtns = document.getElementsByClassName('removeBtn');
   var storedLinks = [];
 
   var init = () => {
-    submitBtn.addEventListener('click', validateUrl);
+    if (submitBtn) { submitBtn.addEventListener('click', validateUrl)};
     refreshLinks();
-  }
-
-  /**
-   * Refresh on initialization and after adding/removing elements
-   * Show results depending on page user is on
-   * Render navigation links appropriately
-   * Add remove button listeners
-   */
-  var refreshLinks = () => {
-    //persist page reload by saving session data
-    storedLinks = sessionStorage.getItem('links') ? JSON.parse(sessionStorage.getItem('links')) : [];
-    calculatePagination(storedLinks);
-    for (let i=0; i < removeBtns.length; i++) {
-      removeBtns[i].addEventListener('click', removeBookmark);
-      editBtns[i].addEventListener('click', editBookmark);
-      saveBtns[i].addEventListener('click', saveBookmark);
-    };
   }
 
   /**
@@ -1704,6 +1742,7 @@ function isSlowBuffer (obj) {
     if (input.value.length > 0 && isValid)  {
       if (await urlExists()) {
         addBookmark(input.value);
+        //document.getElementById('bookmarkForm').submit();
       } else {
         errorMessage = 'URL doesn\'t exist or access was denied';
       } 
@@ -1722,51 +1761,13 @@ function isSlowBuffer (obj) {
     refreshLinks();
   }
 
-  var removeBookmark = (e) => {
-    console.log(e.currentTarget);
-    let id = e.currentTarget.getAttribute('id');
-    let listItem = e.currentTarget.parentNode.parentNode;
-    document.getElementById('links').removeChild(listItem);
-
-    storedLinks.splice(id,1);
-    sessionStorage.setItem('links', JSON.stringify(storedLinks));
-    refreshLinks();
-  }
-
-  var editBookmark = (e) => {
-    let listItem = e.currentTarget.parentNode.parentNode;
-    listItem.classList.add('editMode');
-
-    let id = e.currentTarget.getAttribute('id');
-    let content = e.currentTarget.parentNode.previousSibling.previousSibling;
-    let editInput = document.createElement('input');
-    editInput.classList.add('editInput')
-    editInput.setAttribute('id', id);
-    editInput.value = storedLinks[id];
-    content.innerHTML = '';
-    content.appendChild(editInput);
-    //document.getElementById('links').removeChild(listItem);
-
-    //storedLinks.splice(id,1);
-    //sessionStorage.setItem('links', JSON.stringify(storedLinks));
-    //refreshLinks();
-  }
-
-  var saveBookmark = (e) => {
-    console.log('save it');
-    let id = e.currentTarget.getAttribute('id');
-    let newValue = document.querySelector(`input[id="${id}"]`).value;
-    storedLinks[id] = newValue;
-    sessionStorage.setItem('links', JSON.stringify(storedLinks));
-    refreshLinks();
-  }
-
   init();
 })();
 
-},{"./pagination":29,"axios":2}],29:[function(require,module,exports){
+},{"./refreshLinks":31,"axios":2}],30:[function(require,module,exports){
 module.exports = (function calculatePagination(storedLinks) { 
-  var config = {
+  const addListeners = require('./addListeners');
+  const config = {
     currentPage: 1,
     maxItemsPerPage: 20,
     get totalPages() {
@@ -1809,6 +1810,10 @@ module.exports = (function calculatePagination(storedLinks) {
     return document.getElementById('pagination');
   }
 
+  /**
+   * Check if arrow or page number was clicked
+   * and perform relevant action
+   */
   function changePage(e) {
     let arrows = e.currentTarget.childNodes[0].getAttribute('rel');
     if (arrows) {
@@ -1821,9 +1826,10 @@ module.exports = (function calculatePagination(storedLinks) {
   }
 
   /**
-   * Render only results needed for each page
-   */
+  * Render only results needed for each page
+  */
   function renderResults() {
+    console.log('render results');
     document.getElementById('links').innerHTML = '';
     for (var id=(config.currentPage-1) * config.maxItemsPerPage; id < (config.currentPage * config.maxItemsPerPage) && id < storedLinks.length; id++) {
       let li = document.createElement('li');
@@ -1843,12 +1849,27 @@ module.exports = (function calculatePagination(storedLinks) {
       `;
       document.getElementById('links').appendChild(li);
     }
-
+    addListeners(storedLinks);
+    //refreshLinks();
     return document.getElementById('links');
-  }
+   }
 
   renderResults();
   renderNavigation();
   
 });
-},{}]},{},[28]);
+},{"./addListeners":28}],31:[function(require,module,exports){
+/**
+* Refresh on initialization and after adding/removing elements
+* Show results depending on page user is on
+* Render navigation links appropriately
+* Add remove button listeners
+*/
+const calculatePagination = require('./pagination');
+
+module.exports = (function refreshLinks() {
+  //persist page reload by saving session data
+  storedLinks = sessionStorage.getItem('links') ? JSON.parse(sessionStorage.getItem('links')) : [];
+  calculatePagination(storedLinks);
+});
+},{"./pagination":30}]},{},[29]);

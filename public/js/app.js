@@ -1,35 +1,15 @@
 (function(){
-  const calculatePagination = require('./pagination');
+  const refreshLinks = require('./refreshLinks');
   const axios = require('axios');
 
   var error = document.getElementById('errorMessage');
   var input = document.getElementById('userInput');
   var submitBtn = document.getElementById('submitBtn');
-  var saveBtns = document.getElementsByClassName('saveBtn');
-  var editBtns = document.getElementsByClassName('editBtn');
-  var removeBtns = document.getElementsByClassName('removeBtn');
   var storedLinks = [];
 
   var init = () => {
-    submitBtn.addEventListener('click', validateUrl);
+    if (submitBtn) { submitBtn.addEventListener('click', validateUrl)};
     refreshLinks();
-  }
-
-  /**
-   * Refresh on initialization and after adding/removing elements
-   * Show results depending on page user is on
-   * Render navigation links appropriately
-   * Add remove button listeners
-   */
-  var refreshLinks = () => {
-    //persist page reload by saving session data
-    storedLinks = sessionStorage.getItem('links') ? JSON.parse(sessionStorage.getItem('links')) : [];
-    calculatePagination(storedLinks);
-    for (let i=0; i < removeBtns.length; i++) {
-      removeBtns[i].addEventListener('click', removeBookmark);
-      editBtns[i].addEventListener('click', editBookmark);
-      saveBtns[i].addEventListener('click', saveBookmark);
-    };
   }
 
   /**
@@ -72,6 +52,7 @@
     if (input.value.length > 0 && isValid)  {
       if (await urlExists()) {
         addBookmark(input.value);
+        //document.getElementById('bookmarkForm').submit();
       } else {
         errorMessage = 'URL doesn\'t exist or access was denied';
       } 
@@ -86,46 +67,6 @@
 
   var addBookmark = (url) => {
     storedLinks.push(url);
-    sessionStorage.setItem('links', JSON.stringify(storedLinks));
-    refreshLinks();
-  }
-
-  var removeBookmark = (e) => {
-    let id = e.currentTarget.getAttribute('id');
-    let listItem = e.currentTarget.parentNode.parentNode;
-    document.getElementById('links').removeChild(listItem);
-
-    storedLinks.splice(id,1);
-    sessionStorage.setItem('links', JSON.stringify(storedLinks));
-    refreshLinks();
-  }
-
-  /**
-   * Replace text with input and enable edit mode
-   */
-  var editBookmark = (e) => {
-    let listItem = e.currentTarget.parentNode.parentNode;
-    listItem.classList.add('editMode');
-
-    let id = e.currentTarget.getAttribute('id');
-    let content = e.currentTarget.parentNode.previousSibling.previousSibling;
-    let editInput = document.createElement('input');
-    editInput.classList.add('editInput')
-    editInput.setAttribute('id', id);
-    editInput.value = storedLinks[id];
-    content.innerHTML = '';
-    content.appendChild(editInput);
-  }
-
-  /**
-   * Makes sure we get the value of the current active input
-   * and updates storedLinks array with new value
-   */
-  var saveBookmark = (e) => {
-    console.log('save it');
-    let id = e.currentTarget.getAttribute('id');
-    let newValue = document.querySelector(`input[id="${id}"]`).value;
-    storedLinks[id] = newValue;
     sessionStorage.setItem('links', JSON.stringify(storedLinks));
     refreshLinks();
   }

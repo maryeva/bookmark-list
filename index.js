@@ -6,7 +6,7 @@ app.get('/', function (req, res) {
   res.sendFile(`${__dirname}/public/index.html`);
 })
 
-app.get('/results', function (req, res) {
+app.post('/results', function (req, res) {
   res.sendFile(`${__dirname}/public/results.html`);
 })
 
