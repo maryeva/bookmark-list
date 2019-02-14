@@ -1630,6 +1630,9 @@ function isSlowBuffer (obj) {
 }
 
 },{}],28:[function(require,module,exports){
+/**
+* Add all button listeners needed and define functions to run
+*/
 module.exports = (function addListeners(storedLinks) {
   const refreshLinks = require('./refreshLinks');
 
@@ -1695,7 +1698,7 @@ module.exports = (function addListeners(storedLinks) {
   var error = document.getElementById('errorMessage');
   var input = document.getElementById('userInput');
   var submitBtn = document.getElementById('submitBtn');
-  var storedLinks = [];
+  var storedLinks = sessionStorage.getItem('links') ? JSON.parse(sessionStorage.getItem('links')) : [];;
 
   var init = () => {
     if (submitBtn) { submitBtn.addEventListener('click', validateUrl)};
@@ -1742,7 +1745,7 @@ module.exports = (function addListeners(storedLinks) {
     if (input.value.length > 0 && isValid)  {
       if (await urlExists()) {
         addBookmark(input.value);
-        //document.getElementById('bookmarkForm').submit();
+        document.getElementById('bookmarkForm').submit();
       } else {
         errorMessage = 'URL doesn\'t exist or access was denied';
       } 
@@ -1758,7 +1761,6 @@ module.exports = (function addListeners(storedLinks) {
   var addBookmark = (url) => {
     storedLinks.push(url);
     sessionStorage.setItem('links', JSON.stringify(storedLinks));
-    refreshLinks();
   }
 
   init();
@@ -1829,7 +1831,6 @@ module.exports = (function calculatePagination(storedLinks) {
   * Render only results needed for each page
   */
   function renderResults() {
-    console.log('render results');
     document.getElementById('links').innerHTML = '';
     for (var id=(config.currentPage-1) * config.maxItemsPerPage; id < (config.currentPage * config.maxItemsPerPage) && id < storedLinks.length; id++) {
       let li = document.createElement('li');
@@ -1850,20 +1851,17 @@ module.exports = (function calculatePagination(storedLinks) {
       document.getElementById('links').appendChild(li);
     }
     addListeners(storedLinks);
-    //refreshLinks();
     return document.getElementById('links');
    }
 
   renderResults();
   renderNavigation();
-  
 });
 },{"./addListeners":28}],31:[function(require,module,exports){
 /**
 * Refresh on initialization and after adding/removing elements
 * Show results depending on page user is on
 * Render navigation links appropriately
-* Add remove button listeners
 */
 const calculatePagination = require('./pagination');
 

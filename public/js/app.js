@@ -5,7 +5,7 @@
   var error = document.getElementById('errorMessage');
   var input = document.getElementById('userInput');
   var submitBtn = document.getElementById('submitBtn');
-  var storedLinks = [];
+  var storedLinks = sessionStorage.getItem('links') ? JSON.parse(sessionStorage.getItem('links')) : [];;
 
   var init = () => {
     if (submitBtn) { submitBtn.addEventListener('click', validateUrl)};
@@ -52,7 +52,7 @@
     if (input.value.length > 0 && isValid)  {
       if (await urlExists()) {
         addBookmark(input.value);
-        //document.getElementById('bookmarkForm').submit();
+        document.getElementById('bookmarkForm').submit();
       } else {
         errorMessage = 'URL doesn\'t exist or access was denied';
       } 
@@ -68,7 +68,6 @@
   var addBookmark = (url) => {
     storedLinks.push(url);
     sessionStorage.setItem('links', JSON.stringify(storedLinks));
-    refreshLinks();
   }
 
   init();

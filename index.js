@@ -1,12 +1,16 @@
-const express = require('express');
-const app = express();
-const port = 3000;
+var express = require('express');
+var bodyParser = require('body-parser');
+var app = express();
+var port = 3000;
+
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', function (req, res) {
   res.sendFile(`${__dirname}/public/index.html`);
 })
 
 app.post('/results', function (req, res) {
+  var link = req.body.link;
   res.sendFile(`${__dirname}/public/results.html`);
 })
 
