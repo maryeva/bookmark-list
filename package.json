@@ -1,0 +1,26 @@
+{
+  "name": "bookmark-list",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "browserify ./public/js/app.js > ./public/js/bundle.js && node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maryeva/bookmark-list.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maryeva/bookmark-list/issues"
+  },
+  "homepage": "https://github.com/maryeva/bookmark-list#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "cors-anywhere": "^0.4.1",
+    "express": "^4.16.4"
+  }
+}
