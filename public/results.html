@@ -17,8 +17,10 @@
 
     <script>
       /**
-       * TO DO: get link submitted
+       * TO DO: get link submitted properly
        */
+      var links = JSON.parse(sessionStorage.getItem('links'));
+      document.getElementById('submission').innerHTML = links[links.length-1];
     </script>
   </body>
 </html>

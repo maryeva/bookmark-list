@@ -1,7 +1,7 @@
 /* General */
 html,
 body {
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 14px;
 }
 
@@ -10,17 +10,26 @@ body {
   text-align: center;
 }
 
+.subtitle {
+  font-size: 16px;
+}
+
 /* Form */
 form {
   margin: 0 auto;
   width: 50%
 }
 
+#userInput {
+  width: 250px;
+}
+
 input {
   border: none;
   border-bottom: 1px solid #9e9e9e;
+  font-size: 14px;
   height: 26px;
-  width: 250px;
+  width: inherit;
 }
 
 input:focus {
@@ -33,6 +42,7 @@ button {
   background-color: #fff;
   border: none;
   cursor: pointer;
+  font-size: 14px;
   outline: none;
   padding: 0;
   text-align: center;
@@ -138,7 +148,7 @@ button:hover {
 
 #pagination .active {
   background-color: #26a69a;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 #pagination .active a {
