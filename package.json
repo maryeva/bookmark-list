@@ -20,6 +20,7 @@
   "homepage": "https://github.com/maryeva/bookmark-list#readme",
   "dependencies": {
     "axios": "^0.18.0",
+    "browserify": "^16.2.3",
     "cors-anywhere": "^0.4.1",
     "express": "^4.16.4"
   }
