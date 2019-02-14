@@ -14,6 +14,8 @@ module.exports = (function calculatePagination(storedLinks) {
    */
   function renderNavigation() {
     document.getElementById('pagination').innerHTML = '';
+
+
     if (config.currentPage > 1) {
       let prevArrow = document.createElement('li');
       prevArrow.innerHTML = `<a href="#" rel="prev"><i class="material-icons">chevron_left</i></a>`;
@@ -86,5 +88,8 @@ module.exports = (function calculatePagination(storedLinks) {
    }
 
   renderResults();
-  renderNavigation();
+
+  if (config.totalPages > 1) {
+    renderNavigation();
+  }
 });
